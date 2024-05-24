@@ -2,8 +2,6 @@ import unittest
 from copy import deepcopy
 import time
 
-
-
 from business.getIndexNote import get_index_list, get_calen_list, get_noteIndex_data
 from common.aesfunc import aes_encry
 from common.logCreate import class_case_log
@@ -17,8 +15,9 @@ from common.readYaml import env_config
 class TestNoteinput(unittest.TestCase):
     header = env_config()['headers']
 
+    # -----------------------cookie------------------------------------------
     def testCase01_create_note_invalidcookie_input(self):
-        """上传便签wps_si不存在"""
+        """上传便签cookie不存在"""
         expectBase = {
             "errorCode": -2010,
             "errorMsg": "",
@@ -29,15 +28,14 @@ class TestNoteinput(unittest.TestCase):
             clear_note(note_id)
         clear_recyc_note(index_list)
 
-        self.header['cookie']='wps_sid=123'
+        self.header['cookie'] = 'wps_sid=123'
         create_res = create_common_note(header=self.header)
 
         self.assertEqual(401, create_res.status_code, msg='return code error')
         CheckMethod().output_check(expectBase, create_res.json())
 
-
     def testCase02_create_note_Bcookie_input(self):
-        """上传便签wps_siB用户"""
+        """上传便签cookie使用B用户"""
         expectBase = {
             "errorCode": -1011,
             "errorMsg": "user change!",
@@ -47,10 +45,8 @@ class TestNoteinput(unittest.TestCase):
         for note_id in index_list:
             clear_note(note_id)
         clear_recyc_note(index_list)
-
-        self.header['cookie']='wps_sid=V02SL9txH_cJPTIUPyg0DO65PZgklCI00a28340c0036f58bfd'
+        self.header['cookie'] = 'wps_sid=V02SL9txH_cJPTIUPyg0DO65PZgklCI00a28340c0036f58bfd'
         create_res = create_common_note(header=self.header)
-
         self.assertEqual(412, create_res.status_code, msg='return code error')
         CheckMethod().output_check(expectBase, create_res.json())
 
@@ -60,7 +56,6 @@ class TestNoteinput(unittest.TestCase):
             "errorCode": -2009,
             "errorMsg": "",
         }
-
         index_list = get_index_list()
         for note_id in index_list:
             clear_note(note_id)
@@ -84,12 +79,11 @@ class TestNoteinput(unittest.TestCase):
             clear_note(note_id)
         clear_recyc_note(index_list)
 
-        self.header['cookie']=None
+        self.header['cookie'] = None
         create_res = create_common_note(header=self.header)
 
         self.assertEqual(401, create_res.status_code, msg='return code error')
         CheckMethod().output_check(expectBase, create_res.json())
-
 
     def testCase05_create_note_kcookie_input(self):
         """上传便签cookie值为空"""
@@ -103,12 +97,13 @@ class TestNoteinput(unittest.TestCase):
             clear_note(note_id)
         clear_recyc_note(index_list)
 
-        self.header['cookie']=''
+        self.header['cookie'] = ''
         create_res = create_common_note(header=self.header)
 
         self.assertEqual(401, create_res.status_code, msg='return code error')
         CheckMethod().output_check(expectBase, create_res.json())
 
+    # -----------------------xuserkey------------------------------------------
     def testCase06_create_note_removeuserkey_input(self):
         """上传便签x-user_key缺失"""
         expectBase = {
@@ -139,7 +134,7 @@ class TestNoteinput(unittest.TestCase):
             clear_note(note_id)
         clear_recyc_note(index_list)
 
-        self.header['X-user-key']=None
+        self.header['X-user-key'] = None
         create_res = create_common_note(header=self.header)
 
         self.assertEqual(412, create_res.status_code, msg='return code error')
@@ -163,7 +158,6 @@ class TestNoteinput(unittest.TestCase):
         self.assertEqual(412, create_res.status_code, msg='return code error')
         CheckMethod().output_check(expectBase, create_res.json())
 
-
     def testCase09_create_note_invaliduserkey_input(self):
         """上传便签x-user_key为无效"""
         expectBase = {
@@ -182,6 +176,7 @@ class TestNoteinput(unittest.TestCase):
         self.assertEqual(412, create_res.status_code, msg='return code error')
         CheckMethod().output_check(expectBase, create_res.json())
 
+    # -----------------------noteid------------------------------------------
     def testCase10_create_note_removenoteid_input(self):
         """上传便签noteid缺失"""
         expectBase = {
@@ -194,7 +189,7 @@ class TestNoteinput(unittest.TestCase):
             clear_note(note_id)
         clear_recyc_note(index_list)
 
-        in_body={
+        in_body = {
 
         }
         create_res = create_common_note(info_body=in_body)
@@ -214,14 +209,13 @@ class TestNoteinput(unittest.TestCase):
             clear_note(note_id)
         clear_recyc_note(index_list)
 
-        in_body={
-            'noteId':None
+        in_body = {
+            'noteId': None
         }
         create_res = create_common_note(info_body=in_body)
 
         self.assertEqual(500, create_res.status_code, msg='return code error')
         CheckMethod().output_check(expectBase, create_res.json())
-
 
     def testCase12_create_note_knoteid_input(self):
         """上传便签noteid值为空"""
@@ -283,10 +277,10 @@ class TestNoteinput(unittest.TestCase):
         self.assertEqual(500, create_res.status_code, msg='return code error')
         CheckMethod().output_check(expectBase, create_res.json())
 
-    def testCase14_create_note_ENnoteid_input(self):
+    def testCase14_create_note_sqlnoteid_input(self):
         """上传便签noteid值为英文字符"""
         expectBase = {
-            "responseTime":int,"infoVersion":1,"infoUpdateTime":int
+            "responseTime": int, "infoVersion": int, "infoUpdateTime": int
         }
 
         index_list = get_index_list()
@@ -295,7 +289,28 @@ class TestNoteinput(unittest.TestCase):
         clear_recyc_note(index_list)
 
         in_body = {
-            'noteId': 'Hyyt'+str(time.time() * 1000)[:-5]
+            'noteId': 'Hyyt'
+        }
+        create_res = create_common_note(info_body=in_body)
+
+        self.assertEqual(200, create_res[0].status_code, msg='return code error')
+
+        CheckMethod().output_check(expectBase, create_res[0].json())
+
+
+    def testCase15_create_note_ENnoteid_input(self):
+        """上传便签noteid值为'1 or 1=1'"""
+        expectBase = {
+            "responseTime": int, "infoVersion": int, "infoUpdateTime": int
+        }
+
+        index_list = get_index_list()
+        for note_id in index_list:
+            clear_note(note_id)
+        clear_recyc_note(index_list)
+
+        in_body = {
+            'noteId': '1 or 1=1'
         }
         create_res = create_common_note(info_body=in_body)
 
@@ -307,9 +322,9 @@ class TestNoteinput(unittest.TestCase):
     def testCase15_create_note_NoneremindType_input(self):
         """上传便签remindType值为None"""
         expectBase = {
-            "responseTime":int,
-            "infoVersion":1,
-            "infoUpdateTime":int
+            "responseTime": int,
+            "infoVersion": 1,
+            "infoUpdateTime": int
         }
 
         index_list = get_index_list()
@@ -317,9 +332,9 @@ class TestNoteinput(unittest.TestCase):
             clear_note(note_id)
         clear_recyc_note(index_list)
 
-        in_body={
-            'noteId':str(time.time() * 1000)[:-5],
-            'remindType':None
+        in_body = {
+            'noteId': str(time.time() * 1000)[:-5],
+            'remindType': None
         }
         create_res = create_common_note(info_body=in_body)
 
@@ -327,11 +342,10 @@ class TestNoteinput(unittest.TestCase):
 
         CheckMethod().output_check(expectBase, create_res[0].json())
 
-
     def testCase15_create_note_Nonetitle_input(self):
         """上传便签title值为None"""
         expectBase = {
-            "responseTime":int,"contentVersion":1,"contentUpdateTime":int
+            "responseTime": int, "contentVersion": 1, "contentUpdateTime": int
         }
 
         index_list = get_index_list()
@@ -339,10 +353,10 @@ class TestNoteinput(unittest.TestCase):
             clear_note(note_id)
         clear_recyc_note(index_list)
 
-        in_body={
-            'noteId':str(time.time() * 1000)[:-5],
+        in_body = {
+            'noteId': str(time.time() * 1000)[:-5],
         }
-        content_body={
+        content_body = {
             "noteId": in_body['noteId'],
             "title": None,
             "summary": aes_encry('ceshi'),
@@ -350,8 +364,7 @@ class TestNoteinput(unittest.TestCase):
             "localContentVersion": 1,
             "BodyType": 0
         }
-        create_res = create_common_note(content_body=content_body,info_body=in_body)
+        create_res = create_common_note(content_body=content_body, info_body=in_body)
 
         self.assertEqual(200, create_res[1].status_code, msg='return code error')
         CheckMethod().output_check(expectBase, create_res[1].json())
-
