@@ -40,7 +40,6 @@ class TestGetMajor(unittest.TestCase):
 
         create_res=create_calen_note()
         calen_res=get_calen_note()
-
         self.assertEqual(200, calen_res[1].status_code, msg='return code error')
         expect = deepcopy(self.expectBase)
         expect['webNotes'][0]['noteId'] = create_res[2]['noteId']

@@ -87,21 +87,29 @@ def create_calen_note(header=None, content_body=None,info_body=None):
     return info_res
 
 
-def update_note(noteId, title, summary, body, localContentVersion, remindTime=0, remindType=0):
+def update_note(noteId, title, summary, body, localContentVersion, remindTime=0, remindType=0,flag=0):
     info_body = {
         "noteId": noteId,
         "remindTime": remindTime,
         "remindType": remindType
     }
-
-    content_body = {
-        "noteId": noteId,
-        "title": aes_encry(title),
-        "summary": aes_encry(summary),
-        "body": aes_encry(body),
-        "localContentVersion": localContentVersion,
-        "BodyType": 0
-    }
+    if flag==1:
+        content_body = {
+            "noteId": noteId,
+            "title": aes_encry(title),
+            "summary": aes_encry(summary),
+            "body": aes_encry(body),
+            "BodyType": 0
+        }
+    else:
+        content_body = {
+            "noteId": noteId,
+            "title": aes_encry(title),
+            "summary": aes_encry(summary),
+            "body": aes_encry(body),
+            "localContentVersion": localContentVersion,
+            "BodyType": 0
+        }
     info_res = post(url=create_info_url, headers=headers, body=info_body)
     if info_res.status_code == 200:
         content_res = post(url=create_content_url, headers=headers, body=content_body)

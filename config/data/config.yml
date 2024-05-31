@@ -15,6 +15,11 @@ create_info:
 
 getcalen_note:
   path: '/v3/notesvr/web/getnotes/remind'
+  body:
+    remindStartTime: 1684663698
+    remindEndTime: 1719801004000
+    startIndex: '0'
+    rows: '99'
 
 create_content:
   path: '/v3/notesvr/set/notecontent'
